@@ -157,9 +157,17 @@ const CATEGORY_ORDER = {
   activity: 6,
 };
 
+const builderGroups = [
+  { id: 'layout', label: 'Layout', defaultOpen: true },
+  { id: 'content', label: 'Content' },
+  { id: 'feedback', label: 'Feedback' },
+  { id: 'agentic', label: 'Agentic' },
+];
+
 const builderPalette = [
   {
     id: 'panel-block',
+    group: 'layout',
     label: 'Panel',
     description: 'Fönster för status/loggar. Titel + body text.',
     kind: 'panel',
@@ -169,6 +177,7 @@ const builderPalette = [
   },
   {
     id: 'text-block',
+    group: 'content',
     label: 'Text block',
     description: 'Fri text, prompts eller CLI-kommandon.',
     kind: 'text',
@@ -178,6 +187,7 @@ const builderPalette = [
   },
   {
     id: 'button-block',
+    group: 'content',
     label: 'Button',
     description: 'CTA i terminalstil (Deploy, Retry…).',
     kind: 'button',
@@ -187,6 +197,7 @@ const builderPalette = [
   },
   {
     id: 'kawaii-spinner',
+    group: 'feedback',
     label: 'Kawaii spinner',
     description: 'Hermes thinking animation live i canvasen.',
     kind: 'spinner',
@@ -196,6 +207,7 @@ const builderPalette = [
   },
   {
     id: 'progress-bar',
+    group: 'feedback',
     label: 'Progress bar',
     description: 'Deterministisk bar som följer TCSS.',
     kind: 'progress',
@@ -205,6 +217,7 @@ const builderPalette = [
   },
   {
     id: 'agent-feed-block',
+    group: 'agentic',
     label: 'Agentic feed',
     description: 'Hierarkisk verktygslogg (Thinking → Tools → Output).',
     kind: 'agent-feed',
@@ -214,6 +227,7 @@ const builderPalette = [
   },
   {
     id: 'multi-agent-block',
+    group: 'agentic',
     label: 'Multi-agent deck',
     description: 'Researcher/Judge/Builder-status i samma block.',
     kind: 'multi-agent',
@@ -260,7 +274,7 @@ function initGlyphCatalog() {
   renderFilterPills(filterContainer);
   renderGlyphCards();
   initFilterAndSort();
-  initOpenBtnSpinners();
+  initCardPreviews();
   initInlineGlyphs();
   initCopyButtons();
   updateFullSetExport();
@@ -291,14 +305,10 @@ function renderGlyphCards() {
     card.dataset.name = entry.name.toLowerCase();
     card.dataset.tags = entry.tags.join(' ');
 
-    const demo = document.createElement('div');
-    demo.className = 'sg-card-demo';
-    const demoBtn = document.createElement('button');
-    demoBtn.type = 'button';
-    demoBtn.className = 'open-btn';
-    demoBtn.dataset.glyph = entry.id;
-    demoBtn.innerHTML = `<span class="open-glyph">${entry.frames[0]}</span> Demo`;
-    demo.appendChild(demoBtn);
+    const preview = document.createElement('div');
+    preview.className = 'sg-card-preview';
+    preview.dataset.glyph = entry.id;
+    preview.textContent = entry.frames[0];
 
     const name = document.createElement('div');
     name.className = 'sg-card-name';
@@ -311,18 +321,6 @@ function renderGlyphCards() {
       span.textContent = categoryLabel;
       name.appendChild(span);
     }
-
-    const desc = document.createElement('p');
-    desc.className = 'sg-card-desc';
-    desc.textContent = entry.description;
-
-    const tags = document.createElement('ul');
-    tags.className = 'sg-card-tags';
-    entry.tags.forEach((tag) => {
-      const li = document.createElement('li');
-      li.textContent = tag;
-      tags.appendChild(li);
-    });
 
     const actions = document.createElement('div');
     actions.className = 'sg-card-actions';
@@ -340,7 +338,26 @@ function renderGlyphCards() {
     copyUsage.innerHTML = '<span class="copy-label">Copy användning</span>';
     actions.append(copyData, copyUsage);
 
-    card.append(demo, name, desc, tags, actions);
+    const info = document.createElement('details');
+    info.className = 'sg-card-info';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Mer info';
+    info.appendChild(summary);
+    if (entry.description) {
+      const desc = document.createElement('p');
+      desc.textContent = entry.description;
+      info.appendChild(desc);
+    }
+    const tags = document.createElement('ul');
+    tags.className = 'sg-card-tags';
+    entry.tags.forEach((tag) => {
+      const li = document.createElement('li');
+      li.textContent = tag;
+      tags.appendChild(li);
+    });
+    info.appendChild(tags);
+
+    card.append(preview, name, actions, info);
     gridEl.appendChild(card);
     glyphCardRefs.set(entry.id, card);
   });
@@ -446,17 +463,13 @@ class AlwaysSpinner {
   }
 }
 
-function initOpenBtnSpinners() {
-  document.querySelectorAll('.open-btn[data-glyph]').forEach((btn) => {
-    const glyphId = btn.dataset.glyph;
-    const glyph = glyphMap.get(glyphId);
+
+function initCardPreviews() {
+  document.querySelectorAll('.sg-card-preview[data-glyph]').forEach((el) => {
+    const glyph = glyphMap.get(el.dataset.glyph || '');
     if (!glyph) return;
-    const glyphSpan = btn.querySelector('.open-glyph');
-    if (!glyphSpan) return;
-    const spinner = new AlwaysSpinner(glyphSpan, glyph.frames, { speed: glyph.interval, onHoverSpeed: 60 });
-    setTimeout(() => spinner.start(), Math.random() * 500);
-    btn.addEventListener('mouseenter', () => spinner.setHover(true));
-    btn.addEventListener('mouseleave', () => spinner.setHover(false));
+    const spinner = new AlwaysSpinner(el, glyph.frames, { speed: glyph.interval, onHoverSpeed: glyph.interval });
+    setTimeout(() => spinner.start(), Math.random() * 400);
   });
 }
 
@@ -631,17 +644,7 @@ function initBuilder() {
   builderTerminalFallback = document.getElementById('builder-terminal-fallback');
   if (!paletteWrap || !canvas) return;
 
-  paletteWrap.innerHTML = '';
-  builderPalette.forEach((item) => {
-    const tool = document.createElement('button');
-    tool.type = 'button';
-    tool.className = 'sg-builder-tool';
-    tool.draggable = true;
-    tool.dataset.paletteId = item.id;
-    tool.innerHTML = `<h4>${item.label}</h4><p>${item.description}</p><span>${item.kind}</span>`;
-    tool.addEventListener('dragstart', (event) => handlePaletteDragStart(event, item.id));
-    paletteWrap.appendChild(tool);
-  });
+  renderBuilderPalette(paletteWrap);
 
   canvas.addEventListener('dragover', (event) => {
     event.preventDefault();
@@ -784,6 +787,42 @@ function instantiateComponent(paletteItem, x, y) {
     glyphId: paletteItem.glyphId,
     defaultText: paletteItem.defaultText,
   };
+}
+
+function renderBuilderPalette(container) {
+  container.innerHTML = '';
+  const grouped = new Map();
+  builderPalette.forEach((item) => {
+    const groupId = item.group || 'misc';
+    if (!grouped.has(groupId)) grouped.set(groupId, []);
+    grouped.get(groupId).push(item);
+  });
+  builderGroups.forEach((group) => {
+    const items = grouped.get(group.id);
+    if (!items || !items.length) return;
+    const details = document.createElement('details');
+    details.className = 'sg-builder-group';
+    if (group.defaultOpen) details.open = true;
+    const summary = document.createElement('summary');
+    summary.textContent = group.label;
+    details.appendChild(summary);
+    const list = document.createElement('div');
+    list.className = 'sg-builder-panel-list';
+    items.forEach((item) => list.appendChild(createPaletteTool(item)));
+    details.appendChild(list);
+    container.appendChild(details);
+  });
+}
+
+function createPaletteTool(item) {
+  const tool = document.createElement('button');
+  tool.type = 'button';
+  tool.className = 'sg-builder-tool';
+  tool.draggable = true;
+  tool.dataset.paletteId = item.id;
+  tool.innerHTML = `<h4>${item.label}</h4><p>${item.description}</p><span>${item.kind}</span>`;
+  tool.addEventListener('dragstart', (event) => handlePaletteDragStart(event, item.id));
+  return tool;
 }
 
 function addBuilderComponent(paletteItem, x, y) {

@@ -33,14 +33,8 @@
 
     <nav class="sg-nav-inline" aria-label="Innehåll på sidan">
       <a href="#glyph-animations">Glyph Animations</a>
-      <a href="#inline">Inline</a>
-      <a href="#terminal-mockup">Terminal</a>
-      <a href="#glyph-row-builder">Loading-rad</a>
       <a href="#glyph-builder">Terminal canvas</a>
-      <a href="#cursor-status">Cursor & status</a>
-      <a href="#design">Design</a>
-      <a href="#components">Komponenter</a>
-      <a href="#copy-hela">Copy hela</a>
+      <a href="styleguide.html">Styleguide &amp; komponenter →</a>
     </nav>
 
     <main class="sg-main" id="sg-main">
@@ -75,94 +69,45 @@
         <div class="sg-grid" id="sg-grid" aria-live="polite"></div>
       </section>
 
-      <section class="sg-section" id="inline">
-        <h2 class="sg-section-title">Inline — bara glyfen i text</h2>
-        <p class="sg-section-desc">För "Laddar…", "Syncing" etc.</p>
-        <div class="sg-inline-row">
-          <div class="sg-inline-item"><span class="inline-glyph" data-glyph="braille-orbital">⣻</span> Laddar...</div>
-          <div class="sg-inline-item"><span class="inline-glyph" data-glyph="lunar-sweep">◐</span> WIP</div>
-          <div class="sg-inline-item"><span class="inline-glyph" data-glyph="dice-roll">⚀</span> Rolling...</div>
-        </div>
-      </section>
-
-      <section class="sg-section" id="terminal-mockup">
-        <h2 class="sg-section-title">Terminal mockup</h2>
-        <p class="sg-section-desc">1:1 terminal-fönster för att visa glyphs live. Placera valfri glyph i innehållsytan.</p>
-        <div class="sg-terminal">
-          <div class="sg-terminal-titlebar">
-            <span class="sg-terminal-dots"><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span></span>
-            <span class="sg-terminal-title">zsh — loading</span>
-          </div>
-          <div class="sg-terminal-body">
-            <div class="sg-terminal-line">
-              <span class="sg-terminal-prompt">user@host:~$</span> npm run build
-            </div>
-            <div class="sg-terminal-line sg-terminal-line--glyph">
-              <span class="inline-glyph" data-glyph="braille-orbital">⣻</span> Building…
-            </div>
-            <div class="sg-terminal-line">
-              <span class="sg-terminal-prompt">user@host:~$</span><span class="terminal-cursor"></span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="sg-section" id="glyph-row-builder">
-        <h2 class="sg-section-title">Bygg loading-rad</h2>
-        <p class="sg-section-desc">Lägg till flera glyphs på en rad med plus-knappen — bygg din egen loading-screen.</p>
-        <div class="sg-glyph-row">
-          <div class="sg-glyph-slot">
-            <span class="inline-glyph" data-glyph="braille-orbital">⣻</span>
-          </div>
-          <div class="sg-glyph-slot">
-            <span class="inline-glyph" data-glyph="lunar-sweep">◐</span>
-          </div>
-          <div class="sg-glyph-slot">
-            <span class="inline-glyph" data-glyph="unicode-orbit">⊶</span>
-          </div>
-          <button type="button" class="sg-glyph-add" aria-label="Lägg till glyph">
-            <span class="sg-glyph-add-icon">+</span>
-          </button>
-        </div>
-      </section>
-
       <section class="sg-section" id="glyph-builder">
         <div class="sg-section-heading">
           <span class="sg-label">Terminal canvas</span>
           <h2 class="sg-section-title">Drag-and-drop TUI canvas</h2>
         </div>
         <p class="sg-section-desc">Dra komponenter, snäpp mot 80×24-rutnätet och se resultatet live i en ANSI-terminal. Samma look &amp; feel som resten av styleguiden.</p>
-        <div class="sg-builder-toolbar">
-          <label class="sg-checkbox">
-            <input type="checkbox" id="builder-reduce-motion">
-            Reduce motion (pausa animationer)
-          </label>
-          <button type="button" class="sg-btn sg-btn--secondary sg-btn--sm" id="builder-clear">Rensa canvas</button>
-          <span class="sg-builder-count"><span id="builder-block-count">0</span> block aktiva</span>
-        </div>
-        <div class="sg-builder-layout">
-          <aside class="sg-builder-panel" aria-label="Komponentpalett">
-            <h3>Palette</h3>
-            <p class="sg-builder-panel-desc">Paneler, text, spinner, progress och agentiska feeds redo att dras ut.</p>
-            <div class="sg-builder-panel-list" id="builder-palette"></div>
-          </aside>
-          <div class="sg-builder-canvas-wrap">
-            <div class="sg-builder-canvas" id="builder-canvas" role="application" aria-label="GlyphUI canvas" tabindex="0"></div>
-            <p class="sg-builder-hint">Klicka för att markera block. Dubbelklicka eller tryck Delete för att ta bort. Allt snäpper mot rutnätet.</p>
+        <div class="sg-builder-shell">
+          <div class="sg-builder-toolbar">
+            <label class="sg-checkbox">
+              <input type="checkbox" id="builder-reduce-motion">
+              Reduce motion (pausa animationer)
+            </label>
+            <button type="button" class="sg-btn sg-btn--secondary sg-btn--sm" id="builder-clear">Rensa canvas</button>
+            <span class="sg-builder-count"><span id="builder-block-count">0</span> block aktiva</span>
           </div>
-          <div class="sg-builder-terminal">
-            <div class="sg-builder-terminal-head">
-              <span>Live 80×24 preview</span>
-              <button type="button" class="sg-btn sg-btn--ghost sg-btn--sm" id="builder-reset-demo">Återställ demo</button>
+          <div class="sg-builder-layout">
+            <aside class="sg-builder-panel" aria-label="Komponentpalett">
+              <h3>Palette</h3>
+              <p class="sg-builder-panel-desc">Paneler, text, spinner, progress och agentiska feeds redo att dras ut.</p>
+              <div class="sg-builder-panel-groups" id="builder-palette"></div>
+            </aside>
+            <div class="sg-builder-canvas-wrap">
+              <div class="sg-builder-canvas" id="builder-canvas" role="application" aria-label="GlyphUI canvas" tabindex="0"></div>
+              <p class="sg-builder-hint">Klicka för att markera block. Dubbelklicka eller tryck Delete för att ta bort. Allt snäpper mot rutnätet.</p>
             </div>
-            <div class="sg-terminal sg-terminal--live">
-              <div class="sg-terminal-titlebar">
-                <span class="sg-terminal-dots"><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span></span>
-                <span class="sg-terminal-title">glyphui canvas</span>
+            <div class="sg-builder-terminal">
+              <div class="sg-builder-terminal-head">
+                <span>Live 80×24 preview</span>
+                <button type="button" class="sg-btn sg-btn--ghost sg-btn--sm" id="builder-reset-demo">Återställ demo</button>
               </div>
-              <div class="sg-terminal-body">
-                <div class="builder-terminal-viewport" id="builder-terminal-container">
-                  <pre class="builder-terminal-fallback" id="builder-terminal-fallback" aria-live="polite"></pre>
+              <div class="sg-terminal sg-terminal--live">
+                <div class="sg-terminal-titlebar">
+                  <span class="sg-terminal-dots"><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span></span>
+                  <span class="sg-terminal-title">glyphui canvas</span>
+                </div>
+                <div class="sg-terminal-body">
+                  <div class="builder-terminal-viewport" id="builder-terminal-container">
+                    <pre class="builder-terminal-fallback" id="builder-terminal-fallback" aria-live="polite"></pre>
+                  </div>
                 </div>
               </div>
             </div>
@@ -170,149 +115,13 @@
         </div>
       </section>
 
-      <section class="sg-section" id="cursor-status">
-        <h2 class="sg-section-title">Cursor & status-prick</h2>
-        <div class="sg-row sg-misc">
-          <div class="sg-misc-item">
-            <span class="u">user</span><span class="a">@</span><span class="p">host</span><span class="s">:~$ </span><span class="terminal-cursor"></span>
+      <section class="sg-section sg-styleguide-link">
+        <div class="sg-styleguide-card">
+          <div>
+            <h2 class="sg-section-title">Behöver du hela styleguiden?</h2>
+            <p class="sg-section-desc">Kompletta komponenter, design tokens och terminalexempel finns samlade på en egen sida.</p>
           </div>
-          <div class="sg-misc-item status-dot-wrap">
-            <span class="status-dot"></span> AVAILABLE
-          </div>
-        </div>
-      </section>
-
-      <section class="sg-section" id="design">
-        <h2 class="sg-section-title">Design — typografi & färger</h2>
-        <p class="sg-section-desc">Skala och tokens för att bygga vidare.</p>
-        <div class="sg-typo-block">
-          <span class="sg-label">Typografi</span>
-          <p class="sg-typo-h1">Rubrik 1 — .sg-title</p>
-          <p class="sg-typo-h2">Rubrik 2 — .sg-section-title</p>
-          <p class="sg-typo-body">Body text — mono, 0.8125rem. Använd för brödtext.</p>
-          <p class="sg-typo-small">Liten text — .sg-section-desc, 0.75rem</p>
-        </div>
-        <div class="sg-palette">
-          <span class="sg-label">Färgpalett (--sg-*)</span>
-          <div class="sg-palette-row">
-            <div class="sg-swatch" style="background: var(--sg-bg); border: 1px solid var(--sg-border);" title="--sg-bg">bg</div>
-            <div class="sg-swatch" style="background: var(--sg-text);" title="--sg-text">text</div>
-            <div class="sg-swatch" style="background: var(--sg-text-muted);" title="--sg-text-muted">muted</div>
-            <div class="sg-swatch" style="background: var(--sg-accent);" title="--sg-accent">accent</div>
-            <div class="sg-swatch" style="background: var(--sg-border);" title="--sg-border">border</div>
-            <div class="sg-swatch" style="background: var(--sg-card-bg); border: 1px solid var(--sg-border-subtle);" title="--sg-card-bg">card</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="sg-section" id="components">
-        <h2 class="sg-section-title">Komponenter</h2>
-        <p class="sg-section-desc">Standardkomponenter: knappar, länkar, formulär, modal, tabs, tabell, badge, hamburger, dropdown, footer.</p>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Knappvarianter</span>
-          <div class="sg-btn-row">
-            <button type="button" class="sg-btn sg-btn--primary">Primary</button>
-            <button type="button" class="sg-btn sg-btn--secondary">Secondary</button>
-            <button type="button" class="sg-btn sg-btn--ghost">Ghost</button>
-          </div>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Länkar</span>
-          <p><a href="#" class="sg-link">Standardlänk</a> och <a href="#" class="sg-link sg-link--muted">dämpad länk</a>.</p>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Formulär</span>
-          <div class="sg-form-row">
-            <label class="sg-checkbox"><input type="checkbox" class="sg-checkbox-input"> Checkbox</label>
-            <label class="sg-radio"><input type="radio" name="sg-demo" class="sg-radio-input"> Radio A</label>
-            <label class="sg-radio"><input type="radio" name="sg-demo" class="sg-radio-input"> Radio B</label>
-          </div>
-          <textarea class="sg-textarea" placeholder="Textarea…" rows="3"></textarea>
-          <p class="sg-input-hint sg-input-hint--error">Felmeddelande — .sg-input-hint--error</p>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Badge / tag</span>
-          <span class="sg-badge">Ny</span>
-          <span class="sg-badge sg-badge--muted">Beta</span>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Tabs</span>
-          <div class="sg-tabs" role="tablist">
-            <button type="button" class="sg-tab active" role="tab" aria-selected="true">Flik 1</button>
-            <button type="button" class="sg-tab" role="tab" aria-selected="false">Flik 2</button>
-            <button type="button" class="sg-tab" role="tab" aria-selected="false">Flik 3</button>
-          </div>
-          <div class="sg-tab-panel">Innehåll för vald flik.</div>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Tabell</span>
-          <table class="sg-table">
-            <thead><tr><th>Namn</th><th>Kategori</th></tr></thead>
-            <tbody>
-              <tr><td>braille</td><td>dots</td></tr>
-              <tr><td>moon</td><td>shapes</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Modal</span>
-          <button type="button" class="sg-btn sg-btn--secondary" id="sg-modal-open">Öppna modal</button>
-          <div class="sg-modal" id="sg-modal" hidden aria-modal="true" role="dialog" aria-labelledby="sg-modal-title">
-            <div class="sg-modal-backdrop" id="sg-modal-backdrop"></div>
-            <div class="sg-modal-box">
-              <h3 class="sg-modal-title" id="sg-modal-title">Modal</h3>
-              <p>Innehåll. Stäng med knapp eller klick utanför.</p>
-              <button type="button" class="sg-btn sg-btn--primary" id="sg-modal-close">Stäng</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Hamburger-meny</span>
-          <button type="button" class="sg-hamburger" aria-expanded="false" aria-label="Meny">
-            <span></span><span></span><span></span>
-          </button>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Dropdown</span>
-          <div class="sg-dropdown">
-            <button type="button" class="sg-dropdown-trigger" aria-haspopup="true" aria-expanded="false">Välj variant</button>
-            <div class="sg-dropdown-panel" hidden>
-              <a href="#" class="sg-dropdown-item">braille</a>
-              <a href="#" class="sg-dropdown-item">moon</a>
-              <a href="#" class="sg-dropdown-item">dots</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="sg-component-block">
-          <span class="sg-label">Footer</span>
-          <footer class="sg-footer">
-            <div class="sg-footer-inner">
-              <span class="sg-footer-copy">Loading glyph styleguide</span>
-              <nav class="sg-footer-nav">
-                <a href="#">Länk 1</a>
-                <a href="#">Länk 2</a>
-              </nav>
-            </div>
-          </footer>
-        </div>
-      </section>
-
-      <section class="sg-section sg-code" id="copy-hela">
-        <h2 class="sg-section-title">Copy hela spinnerSets</h2>
-        <p class="sg-section-desc">Hela objektet — klistra in i t.ex. en AI-chatt eller ditt projekt.</p>
-        <div class="sg-code-wrap">
-          <pre class="sg-pre" id="sg-full-set"><code></code></pre>
-          <button type="button" class="sg-copy-btn sg-copy-full" id="sg-copy-full"><span class="copy-label">Copy hela</span></button>
+          <a href="styleguide.html" class="sg-btn sg-btn--primary">Öppna styleguide</a>
         </div>
       </section>
     </main>
