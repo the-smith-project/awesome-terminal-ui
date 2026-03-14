@@ -1,55 +1,432 @@
-/**
- * Loading glyph styleguide — fristående, inga exports. Kör i webbläsare med <script src="script.js">
- */
+const glyphCategories = [
+  { id: 'all', label: 'Alla animationer' },
+  { id: 'spinners', label: 'Spinners & Throbbers' },
+  { id: 'ascii', label: 'ASCII classics' },
+  { id: 'unicode', label: 'Unicode motion' },
+  { id: 'kawaii', label: 'Hermes kawaii' },
+  { id: 'progress', label: 'Progress indicators' },
+  { id: 'activity', label: 'Agentic activity feeds' },
+];
 
-const spinnerSets = {
-  braille: ['\u280B','\u2819','\u2839','\u2838','\u283C','\u2834','\u2826','\u2827','\u2807','\u280F'],
-  arrows:  ['\u2191','\u2197','\u2192','\u2198','\u2193','\u2199','\u2190','\u2196'],
-  blocks:  ['\u2596','\u2598','\u259D','\u2597','\u259A','\u259E','\u2588','\u2593','\u2592','\u2591'],
-  classic: ['|','/','-','\\','|','/','-','\\'],
-  dots:    ['\u28FE','\u28FD','\u28FB','\u28BF','\u287F','\u28DF','\u28AF','\u28B7'],
-  moon:    ['\u25D0','\u25D3','\u25D1','\u25D2'],
-  line:    ['\u2581','\u2582','\u2583','\u2584','\u2585','\u2586','\u2587','\u2588','\u2587','\u2586','\u2585','\u2584','\u2583','\u2582'],
-  hex:     ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'],
-  quarter: ['\u25DC','\u25E0','\u25DD','\u25DF','\u25DE','\u25DE','\u25DD','\u25E0'],
-  triangle: ['\u25E2','\u25E3','\u25E4','\u25E5'],
-  square:  ['\u25F1','\u25F2','\u25F3','\u25F0'],
-  binary:  ['0','1'],
-  dice:    ['\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'],
-  circle:  ['\u25F4','\u25F7','\u25F6','\u25F5'],
-  grow:    ['\u258F','\u258E','\u258D','\u258C','\u258B','\u258A','\u2589','\u2588'],
+const glyphCategoryMeta = new Map(glyphCategories.map((cat) => [cat.id, cat]));
+
+const glyphCatalog = [
+  {
+    id: 'braille-orbital',
+    name: 'Braille Orbital Spinner',
+    category: 'spinners',
+    description: 'Klassisk braille-loop för IO-intensiva kommandon.',
+    frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
+    interval: 80,
+    tags: ['unicode', 'loop'],
+  },
+  {
+    id: 'lunar-sweep',
+    name: 'Lunar Sweep',
+    category: 'unicode',
+    description: 'Fyra fas-moon som funkar i alla terminaler (även Windows).',
+    frames: ['◐', '◓', '◑', '◒'],
+    interval: 90,
+    tags: ['moon', 'calm'],
+  },
+  {
+    id: 'unicode-orbit',
+    name: 'Unicode Orbit',
+    category: 'unicode',
+    description: 'Orbital symboler för progress i mer tekniska dashboards.',
+    frames: ['⊶', '⋔', '⋇', '⊷'],
+    interval: 120,
+    tags: ['symbol', 'loop'],
+  },
+  {
+    id: 'ascii-pipe',
+    name: 'ASCII Pipe',
+    category: 'ascii',
+    description: 'Rent ASCII (|/-\\) när du måste hålla dig till enkla tty:er.',
+    frames: ['|', '/', '-', '\\'],
+    interval: 100,
+    tags: ['retro', 'ci'],
+  },
+  {
+    id: 'ellipsis-pulse',
+    name: 'Ellipsis Pulse',
+    category: 'ascii',
+    description: 'Minimalista tre steg för API-kopplingar och korta svar.',
+    frames: ['.  ', '.. ', '...'],
+    interval: 180,
+    tags: ['minimal'],
+  },
+  {
+    id: 'dice-roll',
+    name: 'Dice Roll',
+    category: 'unicode',
+    description: 'Unicode-tärningar som signalerar slump eller probabilistik AI.',
+    frames: ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'],
+    interval: 140,
+    tags: ['unicode', 'status'],
+  },
+  {
+    id: 'kawaii-loop',
+    name: 'Hermes Cognitive Loop',
+    category: 'kawaii',
+    description: 'Hermes egna thinking faces för att humanisera väntetid.',
+    frames: ['◜ (｡ •́︿•̀｡)', '◠ (⊙_⊙)', '✧٩(ˊᗜˋ*)و✧', '(｡˃ ᵕ ˂｡)'],
+    interval: 450,
+    tags: ['agentic', 'brand'],
+  },
+  {
+    id: 'kawaii-beam',
+    name: 'Hermes Beam',
+    category: 'kawaii',
+    description: 'Blinka → stjärnor, perfekt när agenten hittar svaret.',
+    frames: ['(ง •̀_•́)ง', '(ง •̀ᴗ•́)و ✧', '✧ (ง •̀ᴗ•́)ง ✧'],
+    interval: 420,
+    tags: ['emoji', 'delight'],
+  },
+  {
+    id: 'progress-blocks',
+    name: 'Block Progress Bar',
+    category: 'progress',
+    description: 'Retained-mode bar med 20 steg och tydlig vänster-höger-rörelse.',
+    frames: [
+      '[>-------------------]',
+      '[=>------------------]',
+      '[==>-----------------]',
+      '[===>----------------]',
+      '[====>---------------]',
+      '[=====>--------------]',
+      '[======>-------------]',
+      '[=======>------------]',
+      '[========>-----------]',
+      '[=========>----------]',
+      '[==========>---------]',
+      '[===========>--------]',
+      '[============>-------]',
+      '[=============>------]',
+      '[==============>-----]',
+      '[===============>----]',
+      '[================>---]',
+      '[=================>--]',
+      '[==================>-]',
+      '[====================]',
+    ],
+    interval: 150,
+    tags: ['progress', 'deterministisk'],
+  },
+  {
+    id: 'progress-arc',
+    name: 'Arc Runner',
+    category: 'progress',
+    description: 'ASCII båge som fylls sekventiellt, perfekt för streaming jobs.',
+    frames: ['(    )', '(•   )', '(••  )', '(••• )', '(••••)'],
+    interval: 160,
+    tags: ['ascii', 'loop'],
+  },
+  {
+    id: 'agent-feed',
+    name: 'Agentic Feed Pulse',
+    category: 'activity',
+    description: 'Visar verktygskörningar med emojis och korta förklaringar.',
+    frames: ['┊ 💻 terminal ls -la', '┊ 🔍 web_search design systems', '┊ 📄 web_extract glyphs.md'],
+    interval: 600,
+    tags: ['tools', 'transparens'],
+  },
+  {
+    id: 'workflow-ladder',
+    name: 'Workflow Ladder',
+    category: 'activity',
+    description: 'Researcher → Judge → Builder med live status i samma rad.',
+    frames: [
+      '研究者 Researcher — thinking',
+      'Judge — reviewing patch',
+      'Builder — writing diff',
+    ],
+    interval: 700,
+    tags: ['multi-agent'],
+  },
+];
+
+const glyphMap = new Map(glyphCatalog.map((entry) => [entry.id, entry]));
+const CATEGORY_ORDER = {
+  all: 0,
+  spinners: 1,
+  unicode: 2,
+  ascii: 3,
+  kawaii: 4,
+  progress: 5,
+  activity: 6,
 };
 
-function escapeForJs(c) {
-  if (c === '\\') return "'\\\\'";
-  if (c === "'") return "'\\''";
-  if (c.length === 1 && c.charCodeAt(0) > 127)
-    return "'\\u" + c.charCodeAt(0).toString(16).padStart(4, '0') + "'";
-  return "'" + c + "'";
+const builderPalette = [
+  {
+    id: 'panel-block',
+    label: 'Panel',
+    description: 'Fönster för status/loggar. Titel + body text.',
+    kind: 'panel',
+    width: 26,
+    height: 6,
+    defaultText: 'Panel Title\nstatus: OK',
+  },
+  {
+    id: 'text-block',
+    label: 'Text block',
+    description: 'Fri text, prompts eller CLI-kommandon.',
+    kind: 'text',
+    width: 28,
+    height: 4,
+    defaultText: 'agent@host:~$ npm run ship',
+  },
+  {
+    id: 'button-block',
+    label: 'Button',
+    description: 'CTA i terminalstil (Deploy, Retry…).',
+    kind: 'button',
+    width: 14,
+    height: 3,
+    defaultText: 'Deploy',
+  },
+  {
+    id: 'kawaii-spinner',
+    label: 'Kawaii spinner',
+    description: 'Hermes thinking animation live i canvasen.',
+    kind: 'spinner',
+    glyphId: 'kawaii-loop',
+    width: 14,
+    height: 3,
+  },
+  {
+    id: 'progress-bar',
+    label: 'Progress bar',
+    description: 'Deterministisk bar som följer TCSS.',
+    kind: 'progress',
+    glyphId: 'progress-blocks',
+    width: 28,
+    height: 3,
+  },
+  {
+    id: 'agent-feed-block',
+    label: 'Agentic feed',
+    description: 'Hierarkisk verktygslogg (Thinking → Tools → Output).',
+    kind: 'agent-feed',
+    glyphId: 'agent-feed',
+    width: 32,
+    height: 8,
+  },
+  {
+    id: 'multi-agent-block',
+    label: 'Multi-agent deck',
+    description: 'Researcher/Judge/Builder-status i samma block.',
+    kind: 'multi-agent',
+    width: 34,
+    height: 9,
+  },
+];
+
+const paletteById = new Map(builderPalette.map((item) => [item.id, item]));
+const glyphCardRefs = new Map();
+const GRID = { cols: 80, rows: 24 };
+const builderState = [];
+let builderSelectedId = null;
+let builderFrame = 0;
+let builderTerminal = null;
+let builderTerminalFallback = null;
+const builderSettings = { reduceMotion: false };
+
+const THEME_KEY = 'sg-theme';
+
+const ESC = '\u001B';
+const ANSI_COLORS = {
+  accent: `${ESC}[38;5;82m`,
+  muted: `${ESC}[38;5;240m`,
+  primary: `${ESC}[38;5;45m`,
+  warning: `${ESC}[38;5;208m`,
+  info: `${ESC}[38;5;33m`,
+};
+const ANSI_RESET = `${ESC}[0m`;
+
+const createId = () => (window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+
+document.addEventListener('DOMContentLoaded', () => {
+  initThemeSwitcher();
+  initGlyphCatalog();
+  initDropdowns();
+  initModal();
+  initBuilder();
+});
+
+function initGlyphCatalog() {
+  const filterContainer = document.getElementById('glyph-filter-pills');
+  if (!filterContainer) return;
+  renderFilterPills(filterContainer);
+  renderGlyphCards();
+  initFilterAndSort();
+  initOpenBtnSpinners();
+  initInlineGlyphs();
+  initCopyButtons();
+  updateFullSetExport();
 }
 
-function getUsageSnippet(name) {
-  const chars = spinnerSets[name] || spinnerSets.moon;
-  const arr = '[' + chars.map(escapeForJs).join(',') + ']';
-  return '// ' + name + ' — paste into your project\nconst chars = ' + arr + ';\nlet i = 0;\nconst id = setInterval(() => {\n  element.textContent = chars[i % chars.length];\n  i++;\n}, 100);\n// stop when done: clearInterval(id);';
+function renderFilterPills(container) {
+  container.innerHTML = '';
+  glyphCategories.forEach((category, index) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'sg-pill sg-pill--filter';
+    btn.dataset.filter = category.id;
+    btn.textContent = category.label;
+    btn.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
+    if (index === 0) btn.classList.add('active');
+    container.appendChild(btn);
+  });
 }
 
-function getDataSnippet(name) {
-  const chars = spinnerSets[name];
-  if (!chars) return '';
-  return '  ' + name + ': [' + chars.map(escapeForJs).join(',') + '],';
+function renderGlyphCards() {
+  const gridEl = document.getElementById('sg-grid');
+  if (!gridEl) return;
+  gridEl.innerHTML = '';
+  glyphCatalog.forEach((entry) => {
+    const card = document.createElement('article');
+    card.className = 'sg-card';
+    card.dataset.category = entry.category;
+    card.dataset.name = entry.name.toLowerCase();
+    card.dataset.tags = entry.tags.join(' ');
+
+    const demo = document.createElement('div');
+    demo.className = 'sg-card-demo';
+    const demoBtn = document.createElement('button');
+    demoBtn.type = 'button';
+    demoBtn.className = 'open-btn';
+    demoBtn.dataset.glyph = entry.id;
+    demoBtn.innerHTML = `<span class="open-glyph">${entry.frames[0]}</span> Demo`;
+    demo.appendChild(demoBtn);
+
+    const name = document.createElement('div');
+    name.className = 'sg-card-name';
+    const strong = document.createElement('strong');
+    strong.textContent = entry.name;
+    name.appendChild(strong);
+    const categoryLabel = glyphCategoryMeta.get(entry.category)?.label;
+    if (categoryLabel) {
+      const span = document.createElement('span');
+      span.textContent = categoryLabel;
+      name.appendChild(span);
+    }
+
+    const desc = document.createElement('p');
+    desc.className = 'sg-card-desc';
+    desc.textContent = entry.description;
+
+    const tags = document.createElement('ul');
+    tags.className = 'sg-card-tags';
+    entry.tags.forEach((tag) => {
+      const li = document.createElement('li');
+      li.textContent = tag;
+      tags.appendChild(li);
+    });
+
+    const actions = document.createElement('div');
+    actions.className = 'sg-card-actions';
+    const copyData = document.createElement('button');
+    copyData.type = 'button';
+    copyData.className = 'sg-copy-btn';
+    copyData.dataset.copyType = 'data';
+    copyData.dataset.glyphId = entry.id;
+    copyData.innerHTML = '<span class="copy-label">Copy data</span>';
+    const copyUsage = document.createElement('button');
+    copyUsage.type = 'button';
+    copyUsage.className = 'sg-copy-btn';
+    copyUsage.dataset.copyType = 'usage';
+    copyUsage.dataset.glyphId = entry.id;
+    copyUsage.innerHTML = '<span class="copy-label">Copy användning</span>';
+    actions.append(copyData, copyUsage);
+
+    card.append(demo, name, desc, tags, actions);
+    gridEl.appendChild(card);
+    glyphCardRefs.set(entry.id, card);
+  });
+}
+
+let activeFilter = 'all';
+let sortValue = 'az';
+
+function initFilterAndSort() {
+  const searchEl = document.getElementById('sg-search');
+  const sortEl = document.getElementById('sg-sort');
+  const filterContainer = document.getElementById('glyph-filter-pills');
+  if (filterContainer) {
+    filterContainer.addEventListener('click', (event) => {
+      const target = event.target.closest('.sg-pill');
+      if (!target) return;
+      filterContainer.querySelectorAll('.sg-pill').forEach((btn) => {
+        btn.classList.toggle('active', btn === target);
+        btn.setAttribute('aria-pressed', btn === target ? 'true' : 'false');
+      });
+      activeFilter = target.dataset.filter || 'all';
+      applyFilterAndSort(searchEl?.value || '');
+    });
+  }
+  if (searchEl) {
+    searchEl.addEventListener('input', () => applyFilterAndSort(searchEl.value));
+    searchEl.addEventListener('search', () => applyFilterAndSort(searchEl.value));
+  }
+  if (sortEl) {
+    sortEl.addEventListener('change', () => {
+      sortValue = sortEl.value;
+      applyFilterAndSort(searchEl?.value || '');
+    });
+  }
+  applyFilterAndSort('');
+}
+
+function applyFilterAndSort(searchValue) {
+  const gridEl = document.getElementById('sg-grid');
+  const countEl = document.getElementById('sg-result-count');
+  if (!gridEl || !countEl) return;
+  const term = (searchValue || '').trim().toLowerCase();
+  const filtered = glyphCatalog.filter((entry) => {
+    const matchesFilter = activeFilter === 'all' || entry.category === activeFilter;
+    const haystack = `${entry.name} ${entry.description} ${entry.tags.join(' ')}`.toLowerCase();
+    const matchesSearch = !term || haystack.includes(term);
+    return matchesFilter && matchesSearch;
+  });
+  glyphCatalog.forEach((entry) => {
+    const card = glyphCardRefs.get(entry.id);
+    if (!card) return;
+    if (filtered.includes(entry)) {
+      card.classList.remove('sg-card--hidden');
+    } else {
+      card.classList.add('sg-card--hidden');
+    }
+  });
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortValue === 'category') {
+      const ca = CATEGORY_ORDER[a.category] ?? 99;
+      const cb = CATEGORY_ORDER[b.category] ?? 99;
+      if (ca !== cb) return ca - cb;
+    }
+    if (sortValue === 'za') {
+      return b.name.localeCompare(a.name, 'sv');
+    }
+    return a.name.localeCompare(b.name, 'sv');
+  });
+  sorted.forEach((entry) => {
+    const card = glyphCardRefs.get(entry.id);
+    if (card) gridEl.appendChild(card);
+  });
+  const total = glyphCatalog.length;
+  const visible = filtered.length;
+  countEl.textContent = visible === total ? `${total} animationer` : `Visar ${visible} av ${total}`;
 }
 
 class AlwaysSpinner {
-  constructor(glyph, chars, options) {
-    options = options || {};
-    this.glyph = glyph;
-    this.chars = chars;
-    this.frame = Math.floor(Math.random() * chars.length);
-    this.speed = options.speed !== undefined ? options.speed : 250;
-    this.timer = null;
+  constructor(glyphEl, frames, options = {}) {
+    this.el = glyphEl;
+    this.frames = frames;
+    this.frame = Math.floor(Math.random() * frames.length);
+    this.speed = options.speed ?? 250;
+    this.hoverSpeed = options.onHoverSpeed ?? 80;
     this.hovering = false;
-    this.onHoverSpeed = options.onHoverSpeed !== undefined ? options.onHoverSpeed : 50;
+    this.timer = null;
   }
 
   start() {
@@ -57,197 +434,171 @@ class AlwaysSpinner {
   }
 
   tick() {
-    this.glyph.textContent = this.chars[this.frame % this.chars.length];
-    this.frame++;
-    var speed = this.hovering ? this.onHoverSpeed : this.speed;
-    this.timer = setTimeout(this.tick.bind(this), speed);
+    if (!this.el || !this.frames.length) return;
+    this.el.textContent = this.frames[this.frame % this.frames.length];
+    this.frame += 1;
+    const delay = this.hovering ? this.hoverSpeed : this.speed;
+    this.timer = window.setTimeout(() => this.tick(), delay);
   }
 
-  setHover(on) {
-    this.hovering = on;
+  setHover(state) {
+    this.hovering = state;
   }
 }
 
 function initOpenBtnSpinners() {
-  document.querySelectorAll('.open-btn[data-spinner]').forEach(function(btn) {
-    var glyph = btn.querySelector('.open-glyph');
+  document.querySelectorAll('.open-btn[data-glyph]').forEach((btn) => {
+    const glyphId = btn.dataset.glyph;
+    const glyph = glyphMap.get(glyphId);
     if (!glyph) return;
-    var setName = btn.dataset.spinner || 'braille';
-    var chars = spinnerSets[setName] || spinnerSets.braille;
-    var spinner = new AlwaysSpinner(glyph, chars);
-    setTimeout(function() { spinner.start(); }, Math.random() * 800);
-    btn.addEventListener('mouseenter', function() { spinner.setHover(true); });
-    btn.addEventListener('mouseleave', function() { spinner.setHover(false); });
+    const glyphSpan = btn.querySelector('.open-glyph');
+    if (!glyphSpan) return;
+    const spinner = new AlwaysSpinner(glyphSpan, glyph.frames, { speed: glyph.interval, onHoverSpeed: 60 });
+    setTimeout(() => spinner.start(), Math.random() * 500);
+    btn.addEventListener('mouseenter', () => spinner.setHover(true));
+    btn.addEventListener('mouseleave', () => spinner.setHover(false));
   });
 }
 
 function initInlineGlyphs() {
-  document.querySelectorAll('.inline-glyph[data-spinner]').forEach(function(el) {
-    var setName = el.dataset.spinner || 'braille';
-    var chars = spinnerSets[setName] || spinnerSets.braille;
-    var spinner = new AlwaysSpinner(el, chars, { speed: 80, onHoverSpeed: 80 });
-    setTimeout(function() { spinner.start(); }, Math.random() * 200);
+  document.querySelectorAll('.inline-glyph[data-glyph]').forEach((el) => {
+    const glyph = glyphMap.get(el.dataset.glyph || '');
+    if (!glyph) return;
+    const spinner = new AlwaysSpinner(el, glyph.frames, { speed: glyph.interval, onHoverSpeed: glyph.interval });
+    setTimeout(() => spinner.start(), Math.random() * 300);
   });
 }
 
-function copyToClipboard(text) {
-  return navigator.clipboard.writeText(text).then(function() { return true; }).catch(function() { return false; });
-}
-
-function flashCopyLabel(btn) {
-  var label = btn.querySelector('.copy-label') || btn;
-  var was = label.textContent;
-  label.textContent = 'Kopierat!';
-  setTimeout(function() { label.textContent = was; }, 1200);
+function escapeFrameChar(char) {
+  if (char === '\\') return "'\\\\'";
+  if (char === "'") return "'\\''";
+  if (char.length === 1 && char.charCodeAt(0) > 127) {
+    return `"\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}"`;
+  }
+  return `'${char}'`;
 }
 
 function initCopyButtons() {
-  document.querySelectorAll('[data-copy-data]').forEach(function(btn) {
-    var name = btn.dataset.copyData;
-    btn.addEventListener('click', function() {
-      copyToClipboard(getDataSnippet(name)).then(function(ok) { if (ok) flashCopyLabel(btn); });
+  document.querySelectorAll('.sg-copy-btn[data-glyph-id]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const glyphId = btn.dataset.glyphId;
+      const type = btn.dataset.copyType;
+      if (!glyphId || !type) return;
+      copyGlyphSnippet(glyphId, type).then((ok) => {
+        if (ok) flashCopyLabel(btn);
+      });
     });
   });
-  document.querySelectorAll('[data-copy-usage]').forEach(function(btn) {
-    var name = btn.dataset.copyUsage;
-    btn.addEventListener('click', function() {
-      copyToClipboard(getUsageSnippet(name)).then(function(ok) { if (ok) flashCopyLabel(btn); });
-    });
-  });
-  var fullPre = document.getElementById('sg-full-set');
-  var fullBtn = document.getElementById('sg-copy-full');
-  if (fullPre && fullBtn) {
-    var lines = ['const spinnerSets = {'];
-    for (var name in spinnerSets) {
-      if (spinnerSets.hasOwnProperty(name)) lines.push(getDataSnippet(name));
-    }
-    lines.push('};');
-    fullPre.querySelector('code').textContent = lines.join('\n');
-    fullBtn.addEventListener('click', function() {
-      copyToClipboard(lines.join('\n')).then(function(ok) { if (ok) flashCopyLabel(fullBtn); });
-    });
+}
+
+function copyGlyphSnippet(glyphId, type) {
+  const entry = glyphMap.get(glyphId);
+  if (!entry) return Promise.resolve(false);
+  const text = type === 'data' ? formatGlyphData(entry) : formatGlyphUsage(entry);
+  return copyToClipboard(text);
+}
+
+function formatGlyphData(entry) {
+  const frames = entry.frames.map(escapeFrameChar).join(', ');
+  return `  "${entry.id}": { interval: ${entry.interval}, frames: [${frames}] },`;
+}
+
+function formatGlyphUsage(entry) {
+  const frames = entry.frames.map(escapeFrameChar).join(', ');
+  return `// ${entry.name}\nconst frames = [${frames}];\nlet i = 0;\nconst timer = setInterval(() => {\n  element.textContent = frames[i % frames.length];\n  i += 1;\n}, ${entry.interval});\n// stoppa: clearInterval(timer);`;
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text).then(() => true).catch(() => false);
+  }
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-9999px';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    const ok = document.execCommand('copy');
+    return Promise.resolve(ok);
+  } catch (e) {
+    return Promise.resolve(false);
+  } finally {
+    document.body.removeChild(textarea);
   }
 }
 
-var THEME_KEY = 'sg-theme';
+function flashCopyLabel(btn) {
+  const label = btn.querySelector('.copy-label') || btn;
+  const previous = label.textContent;
+  label.textContent = 'Kopierat!';
+  setTimeout(() => {
+    label.textContent = previous;
+  }, 1200);
+}
 
-var CATEGORY_ORDER = { dots: 1, arrows: 2, blocks: 3, ascii: 4, shapes: 5, symbols: 6 };
-var SORT_AZ = 'az';
-var SORT_ZA = 'za';
-var SORT_CATEGORY = 'category';
+function initThemeSwitcher() {
+  const theme = getTheme();
+  setTheme(theme);
+  document.querySelectorAll('.sg-theme-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.theme) setTheme(btn.dataset.theme);
+    });
+  });
+}
 
 function getTheme() {
   try {
-    var saved = localStorage.getItem(THEME_KEY);
+    const saved = localStorage.getItem(THEME_KEY);
     if (saved === 'dark' || saved === 'light' || saved === 'terminal') return saved;
-  } catch (e) {}
+  } catch (e) {
+    /* ignore */
+  }
   return 'dark';
 }
 
 function setTheme(theme) {
   document.body.setAttribute('data-theme', theme);
-  document.querySelectorAll('.sg-theme-btn').forEach(function(btn) {
+  document.querySelectorAll('.sg-theme-btn').forEach((btn) => {
     btn.setAttribute('aria-pressed', btn.dataset.theme === theme ? 'true' : 'false');
   });
-  try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
-}
-
-function initThemeSwitcher() {
-  var theme = getTheme();
-  setTheme(theme);
-  document.querySelectorAll('.sg-theme-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      setTheme(btn.dataset.theme);
-    });
-  });
-}
-
-function getCardName(card) {
-  var nameEl = card.querySelector('.sg-card-name');
-  return nameEl ? nameEl.textContent.trim().toLowerCase() : '';
-}
-
-function getCardCategory(card) {
-  return card.getAttribute('data-category') || '';
-}
-
-function applyFilterAndSort() {
-  var searchEl = document.getElementById('sg-search');
-  var gridEl = document.getElementById('sg-grid');
-  var countEl = document.getElementById('sg-result-count');
-  if (!gridEl || !countEl) return;
-
-  var search = (searchEl && searchEl.value) ? searchEl.value.trim().toLowerCase() : '';
-  var activePill = document.querySelector('.sg-pill--filter.active');
-  var activeFilter = (activePill && activePill.dataset.filter) ? activePill.dataset.filter : 'all';
-  var sortValue = 'az';
-  var sortEl = document.getElementById('sg-sort');
-  if (sortEl) sortValue = sortEl.value || 'az';
-
-  var cards = Array.from(gridEl.querySelectorAll('.sg-card'));
-  var visible = cards.filter(function(card) {
-    var name = getCardName(card);
-    var cat = getCardCategory(card);
-    var matchSearch = !search || name.indexOf(search) !== -1;
-    var matchCat = activeFilter === 'all' || cat === activeFilter;
-    return matchSearch && matchCat;
-  });
-
-  visible.forEach(function(c) { c.classList.remove('sg-card--hidden'); });
-  cards.forEach(function(c) {
-    if (visible.indexOf(c) === -1) c.classList.add('sg-card--hidden');
-  });
-
-  visible.sort(function(a, b) {
-    var na = getCardName(a);
-    var nb = getCardName(b);
-    if (sortValue === SORT_ZA) return nb.localeCompare(na);
-    if (sortValue === SORT_CATEGORY) {
-      var ca = CATEGORY_ORDER[getCardCategory(a)] || 99;
-      var cb = CATEGORY_ORDER[getCardCategory(b)] || 99;
-      if (ca !== cb) return ca - cb;
-    }
-    return na.localeCompare(nb);
-  });
-
-  visible.forEach(function(card) {
-    gridEl.appendChild(card);
-  });
-
-  var total = cards.length;
-  countEl.textContent = visible.length === total ? total + ' varianter' : 'Visar ' + visible.length + ' av ' + total;
-}
-
-function initFilterAndSort() {
-  var searchEl = document.getElementById('sg-search');
-  var sortEl = document.getElementById('sg-sort');
-  document.querySelectorAll('.sg-pill--filter').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.sg-pill--filter').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      applyFilterAndSort();
-    });
-  });
-  if (searchEl) {
-    searchEl.addEventListener('input', applyFilterAndSort);
-    searchEl.addEventListener('search', applyFilterAndSort);
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch (e) {
+    /* ignore */
   }
-  if (sortEl) sortEl.addEventListener('change', applyFilterAndSort);
-  applyFilterAndSort();
+}
+
+function updateFullSetExport() {
+  const pre = document.getElementById('sg-full-set');
+  const copyBtn = document.getElementById('sg-copy-full');
+  if (!pre || !copyBtn) return;
+  const lines = ['const glyphAnimations = {'];
+  glyphCatalog.forEach((entry) => {
+    lines.push(formatGlyphData(entry));
+  });
+  lines.push('};');
+  pre.querySelector('code').textContent = lines.join('\n');
+  copyBtn.addEventListener('click', () => {
+    copyToClipboard(lines.join('\n')).then((ok) => {
+      if (ok) flashCopyLabel(copyBtn);
+    });
+  });
 }
 
 function initDropdowns() {
-  document.querySelectorAll('.sg-dropdown').forEach(function(wrap) {
-    var trigger = wrap.querySelector('.sg-dropdown-trigger');
-    var panel = wrap.querySelector('.sg-dropdown-panel');
+  document.querySelectorAll('.sg-dropdown').forEach((wrap) => {
+    const trigger = wrap.querySelector('.sg-dropdown-trigger');
+    const panel = wrap.querySelector('.sg-dropdown-panel');
     if (!trigger || !panel) return;
-    trigger.addEventListener('click', function() {
-      var open = !panel.hidden;
+    trigger.addEventListener('click', () => {
+      const open = !panel.hidden;
       panel.hidden = open;
-      trigger.setAttribute('aria-expanded', !open);
+      trigger.setAttribute('aria-expanded', (!open).toString());
     });
-    document.addEventListener('click', function(e) {
-      if (!wrap.contains(e.target)) {
+    document.addEventListener('click', (event) => {
+      if (!wrap.contains(event.target)) {
         panel.hidden = true;
         trigger.setAttribute('aria-expanded', 'false');
       }
@@ -256,27 +607,424 @@ function initDropdowns() {
 }
 
 function initModal() {
-  var openBtn = document.getElementById('sg-modal-open');
-  var modal = document.getElementById('sg-modal');
-  var closeBtn = document.getElementById('sg-modal-close');
-  var backdrop = document.getElementById('sg-modal-backdrop');
-  if (!modal || !openBtn) return;
-  openBtn.addEventListener('click', function() {
+  const openBtn = document.getElementById('sg-modal-open');
+  const modal = document.getElementById('sg-modal');
+  const closeBtn = document.getElementById('sg-modal-close');
+  const backdrop = document.getElementById('sg-modal-backdrop');
+  if (!openBtn || !modal) return;
+  openBtn.addEventListener('click', () => {
     modal.hidden = false;
   });
-  function closeModal() {
+  const closeModal = () => {
     modal.hidden = true;
-  }
+  };
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (backdrop) backdrop.addEventListener('click', closeModal);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  initThemeSwitcher();
-  initFilterAndSort();
-  initDropdowns();
-  initModal();
-  initOpenBtnSpinners();
-  initInlineGlyphs();
-  initCopyButtons();
-});
+function initBuilder() {
+  const paletteWrap = document.getElementById('builder-palette');
+  const canvas = document.getElementById('builder-canvas');
+  const clearBtn = document.getElementById('builder-clear');
+  const resetBtn = document.getElementById('builder-reset-demo');
+  const reduceMotionToggle = document.getElementById('builder-reduce-motion');
+  builderTerminalFallback = document.getElementById('builder-terminal-fallback');
+  if (!paletteWrap || !canvas) return;
+
+  paletteWrap.innerHTML = '';
+  builderPalette.forEach((item) => {
+    const tool = document.createElement('button');
+    tool.type = 'button';
+    tool.className = 'sg-builder-tool';
+    tool.draggable = true;
+    tool.dataset.paletteId = item.id;
+    tool.innerHTML = `<h4>${item.label}</h4><p>${item.description}</p><span>${item.kind}</span>`;
+    tool.addEventListener('dragstart', (event) => handlePaletteDragStart(event, item.id));
+    paletteWrap.appendChild(tool);
+  });
+
+  canvas.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+  });
+  canvas.addEventListener('drop', (event) => {
+    event.preventDefault();
+    handleCanvasDrop(event);
+  });
+  canvas.addEventListener('click', (event) => {
+    if (event.target === canvas) {
+      setBuilderSelection(null);
+    }
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      builderState.length = 0;
+      builderSelectedId = null;
+      renderBuilderCanvas();
+      updateBuilderCount();
+      updateTerminalPreview();
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      resetBuilderDemo();
+    });
+  }
+
+  if (reduceMotionToggle) {
+    reduceMotionToggle.addEventListener('change', () => {
+      builderSettings.reduceMotion = reduceMotionToggle.checked;
+      updateTerminalPreview();
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    renderBuilderCanvas();
+    updateTerminalPreview();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if ((event.key === 'Delete' || event.key === 'Backspace') && builderSelectedId) {
+      event.preventDefault();
+      removeBuilderComponent(builderSelectedId);
+    }
+  });
+
+  initTerminalPreview();
+  resetBuilderDemo();
+  setInterval(() => {
+    if (!builderSettings.reduceMotion) {
+      builderFrame += 1;
+    }
+    updateTerminalPreview();
+  }, 420);
+}
+
+function handlePaletteDragStart(event, paletteId) {
+  const data = JSON.stringify({ source: 'palette', paletteId });
+  event.dataTransfer.setData('application/json', data);
+  event.dataTransfer.setData('text/plain', data);
+  event.dataTransfer.effectAllowed = 'copy';
+}
+
+function handleNodeDragStart(event, component) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const payload = {
+    source: 'node',
+    instanceId: component.instanceId,
+    offsetX: event.clientX - rect.left,
+    offsetY: event.clientY - rect.top,
+  };
+  const data = JSON.stringify(payload);
+  event.dataTransfer.setData('application/json', data);
+  event.dataTransfer.setData('text/plain', data);
+  event.dataTransfer.effectAllowed = 'move';
+}
+
+function handleCanvasDrop(event) {
+  const canvas = document.getElementById('builder-canvas');
+  if (!canvas) return;
+  const dataText = event.dataTransfer.getData('application/json') || event.dataTransfer.getData('text/plain');
+  if (!dataText) return;
+  let payload;
+  try {
+    payload = JSON.parse(dataText);
+  } catch (e) {
+    return;
+  }
+  const rect = canvas.getBoundingClientRect();
+  const metrics = getCanvasMetrics();
+  if (!metrics) return;
+  const dropX = event.clientX - rect.left;
+  const dropY = event.clientY - rect.top;
+
+  if (payload.source === 'palette' && payload.paletteId) {
+    const paletteItem = paletteById.get(payload.paletteId);
+    if (!paletteItem) return;
+    const startX = clamp(Math.floor(dropX / metrics.cellWidth), 0, GRID.cols - paletteItem.width);
+    const startY = clamp(Math.floor(dropY / metrics.cellHeight), 0, GRID.rows - paletteItem.height);
+    addBuilderComponent(paletteItem, startX, startY);
+    return;
+  }
+
+  if (payload.source === 'node' && payload.instanceId) {
+    const component = builderState.find((item) => item.instanceId === payload.instanceId);
+    if (!component) return;
+    const adjustedX = dropX - (payload.offsetX || 0);
+    const adjustedY = dropY - (payload.offsetY || 0);
+    const newX = clamp(Math.floor(adjustedX / metrics.cellWidth), 0, GRID.cols - component.width);
+    const newY = clamp(Math.floor(adjustedY / metrics.cellHeight), 0, GRID.rows - component.height);
+    moveBuilderComponent(component.instanceId, newX, newY);
+  }
+}
+
+function getCanvasMetrics() {
+  const canvas = document.getElementById('builder-canvas');
+  if (!canvas) return null;
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return null;
+  return {
+    cellWidth: rect.width / GRID.cols,
+    cellHeight: rect.height / GRID.rows,
+  };
+}
+
+function instantiateComponent(paletteItem, x, y) {
+  return {
+    instanceId: createId(),
+    paletteId: paletteItem.id,
+    label: paletteItem.label,
+    kind: paletteItem.kind,
+    width: paletteItem.width,
+    height: paletteItem.height,
+    x,
+    y,
+    glyphId: paletteItem.glyphId,
+    defaultText: paletteItem.defaultText,
+  };
+}
+
+function addBuilderComponent(paletteItem, x, y) {
+  const component = instantiateComponent(paletteItem, x, y);
+  builderState.push(component);
+  builderSelectedId = component.instanceId;
+  renderBuilderCanvas();
+  updateBuilderCount();
+  updateTerminalPreview();
+}
+
+function moveBuilderComponent(instanceId, x, y) {
+  const component = builderState.find((item) => item.instanceId === instanceId);
+  if (!component) return;
+  component.x = x;
+  component.y = y;
+  builderSelectedId = instanceId;
+  renderBuilderCanvas();
+  updateTerminalPreview();
+}
+
+function removeBuilderComponent(instanceId) {
+  const index = builderState.findIndex((item) => item.instanceId === instanceId);
+  if (index === -1) return;
+  builderState.splice(index, 1);
+  if (builderSelectedId === instanceId) builderSelectedId = null;
+  renderBuilderCanvas();
+  updateBuilderCount();
+  updateTerminalPreview();
+}
+
+function renderBuilderCanvas() {
+  const canvas = document.getElementById('builder-canvas');
+  if (!canvas) return;
+  const metrics = getCanvasMetrics();
+  if (!metrics) return;
+  canvas.innerHTML = '';
+  builderState.forEach((component) => {
+    const node = document.createElement('button');
+    node.type = 'button';
+    node.className = 'builder-node';
+    if (component.instanceId === builderSelectedId) node.classList.add('is-active');
+    node.style.width = `${component.width * metrics.cellWidth}px`;
+    node.style.height = `${component.height * metrics.cellHeight}px`;
+    node.style.left = `${component.x * metrics.cellWidth}px`;
+    node.style.top = `${component.y * metrics.cellHeight}px`;
+    node.textContent = component.label;
+    node.setAttribute('aria-label', component.label);
+    node.draggable = true;
+    node.dataset.instanceId = component.instanceId;
+    node.addEventListener('dragstart', (event) => handleNodeDragStart(event, component));
+    node.addEventListener('click', (event) => {
+      event.stopPropagation();
+      setBuilderSelection(component.instanceId);
+    });
+    node.addEventListener('dblclick', (event) => {
+      event.preventDefault();
+      removeBuilderComponent(component.instanceId);
+    });
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'builder-node-remove';
+    removeBtn.setAttribute('aria-label', `Ta bort ${component.label}`);
+    removeBtn.textContent = '×';
+    removeBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      removeBuilderComponent(component.instanceId);
+    });
+    node.appendChild(removeBtn);
+    canvas.appendChild(node);
+  });
+}
+
+function setBuilderSelection(instanceId) {
+  builderSelectedId = instanceId;
+  renderBuilderCanvas();
+}
+
+function updateBuilderCount() {
+  const counter = document.getElementById('builder-block-count');
+  if (!counter) return;
+  counter.textContent = builderState.length.toString();
+}
+
+function initTerminalPreview() {
+  const container = document.getElementById('builder-terminal-container');
+  if (container && window.Terminal) {
+    builderTerminal = new window.Terminal({
+      rows: GRID.rows,
+      cols: GRID.cols,
+      convertEol: true,
+      disableStdin: true,
+      fontFamily: 'IBM Plex Mono, Space Mono, monospace',
+      fontSize: 13,
+      theme: { background: '#050405', foreground: '#f5e6c8' },
+    });
+    builderTerminal.open(container);
+  }
+}
+
+function updateTerminalPreview() {
+  const output = renderAnsiLayout(builderState, builderFrame);
+  if (builderTerminal) {
+    builderTerminal.reset();
+    builderTerminal.write(output);
+  } else if (builderTerminalFallback) {
+    builderTerminalFallback.textContent = output.replace(/\u001B\[[0-9;]*m/g, '');
+  }
+}
+
+function resetBuilderDemo() {
+  builderState.length = 0;
+  builderSelectedId = null;
+  const defaults = [
+    { paletteId: 'panel-block', x: 2, y: 2 },
+    { paletteId: 'agent-feed-block', x: 42, y: 2 },
+    { paletteId: 'multi-agent-block', x: 2, y: 12 },
+    { paletteId: 'kawaii-spinner', x: 52, y: 13 },
+    { paletteId: 'progress-bar', x: 42, y: 18 },
+  ];
+  defaults.forEach((item) => {
+    const paletteItem = paletteById.get(item.paletteId);
+    if (paletteItem) {
+      builderState.push(instantiateComponent(paletteItem, item.x, item.y));
+    }
+  });
+  builderSelectedId = null;
+  updateBuilderCount();
+  renderBuilderCanvas();
+  updateTerminalPreview();
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function renderAnsiLayout(components, frame) {
+  const grid = Array.from({ length: GRID.rows }, () => Array.from({ length: GRID.cols }, () => ({ char: ' ' })));
+  const writeText = (startX, startY, text, colorCode) => {
+    const lines = text.split('\n');
+    lines.forEach((line, rowOffset) => {
+      const row = startY + rowOffset;
+      if (row < 0 || row >= GRID.rows) return;
+      [...line].forEach((char, colOffset) => {
+        const col = startX + colOffset;
+        if (col < 0 || col >= GRID.cols) return;
+        grid[row][col] = { char, color: colorCode };
+      });
+    });
+  };
+
+  const drawPanel = (component, title, colorCode = 'accent') => {
+    const { x, y, width, height } = component;
+    for (let col = 0; col < width; col += 1) {
+      if (y >= 0 && y < GRID.rows && x + col < GRID.cols) {
+        grid[y][x + col] = { char: col === 0 ? '┌' : col === width - 1 ? '┐' : '─', color: colorCode };
+      }
+      if (y + height - 1 >= 0 && y + height - 1 < GRID.rows && x + col < GRID.cols) {
+        grid[y + height - 1][x + col] = { char: col === 0 ? '└' : col === width - 1 ? '┘' : '─', color: colorCode };
+      }
+    }
+    for (let row = 1; row < height - 1; row += 1) {
+      if (y + row >= 0 && y + row < GRID.rows) {
+        grid[y + row][x] = { char: '│', color: colorCode };
+        grid[y + row][x + width - 1] = { char: '│', color: colorCode };
+      }
+    }
+    writeText(x + 2, y + 1, title, 'accent');
+  };
+
+  components.forEach((component) => {
+    const glyph = component.glyphId ? glyphMap.get(component.glyphId) : null;
+    switch (component.kind) {
+      case 'panel': {
+        const lines = (component.defaultText || '').split('\n');
+        drawPanel(component, lines[0] || 'Panel');
+        const body = lines.slice(1).join('\n');
+        if (body) writeText(component.x + 2, component.y + 2, body, 'muted');
+        break;
+      }
+      case 'text': {
+        writeText(component.x, component.y, component.defaultText || '', 'muted');
+        break;
+      }
+      case 'button': {
+        const label = component.defaultText || 'Button';
+        const text = `[ ${label.toUpperCase()} ]`;
+        writeText(component.x, component.y + 1, text, 'primary');
+        break;
+      }
+      case 'spinner': {
+        const frames = glyph?.frames || ['⠋'];
+        const char = frames[frame % frames.length];
+        writeText(component.x + 1, component.y + 1, `${char} Thinking`, 'accent');
+        break;
+      }
+      case 'progress': {
+        const frames = glyph?.frames || ['[-----]'];
+        const bar = frames[frame % frames.length];
+        writeText(component.x, component.y + 1, `${bar} ${(frame % 20) * 5}%`, 'primary');
+        break;
+      }
+      case 'agent-feed': {
+        const frames = glyph?.frames || [];
+        const feedLines = frames.map((line, idx) => {
+          const pointer = idx === frame % frames.length ? '▶' : '┊';
+          return `${pointer} ${line}`;
+        });
+        writeText(component.x, component.y + 1, feedLines.join('\n'), 'muted');
+        break;
+      }
+      case 'multi-agent': {
+        drawPanel(component, 'Agent Deck', 'warning');
+        const statuses = [
+          `Researcher  ${frame % 3 === 0 ? '🔍 new intel' : '… scanning'}`,
+          `Judge       ${frame % 3 === 1 ? '⚖️ scoring' : 'review queued'}`,
+          `Builder     ${frame % 3 === 2 ? '✏️ patching' : 'awaiting brief'}`,
+        ];
+        writeText(component.x + 2, component.y + 2, statuses.join('\n'), 'muted');
+        break;
+      }
+      default:
+        break;
+    }
+  });
+
+  return `${ANSI_RESET}${ESC}[2J${ESC}[H${gridToAnsi(grid)}`;
+}
+
+function gridToAnsi(grid) {
+  let buffer = '';
+  grid.forEach((row) => {
+    let currentColor = null;
+    row.forEach((cell) => {
+      if (cell.color !== currentColor) {
+        currentColor = cell.color;
+        buffer += currentColor && ANSI_COLORS[currentColor] ? ANSI_COLORS[currentColor] : ANSI_RESET;
+      }
+      buffer += cell.char;
+    });
+    buffer += `${ANSI_RESET}\n`;
+  });
+  return buffer;
+}

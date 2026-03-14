@@ -221,6 +221,12 @@ body {
   margin-bottom: 6px;
 }
 
+.sg-section-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .sg-section-desc {
   font-size: 0.75rem;
   color: var(--sg-text-dim);
@@ -396,6 +402,32 @@ body {
   flex-wrap: wrap;
   gap: 6px;
   justify-content: center;
+}
+
+.sg-card-desc {
+  font-size: 0.75rem;
+  color: var(--sg-text-muted);
+  text-align: center;
+}
+
+.sg-card-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.sg-card-tags li {
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--sg-radius-sm);
+  background: var(--sg-btn-bg);
+  color: var(--sg-text-dim);
 }
 
 /* --- Komponent: Copy-knapp --- */
@@ -685,6 +717,212 @@ body {
   background: var(--sg-accent-glow);
 }
 .sg-glyph-add-icon { line-height: 1; }
+
+/* ==========================================================================
+   Glyph builder — palette, canvas, terminal
+   ========================================================================== */
+.sg-builder-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 16px;
+}
+
+.sg-builder-toolbar .sg-checkbox {
+  font-size: 0.75rem;
+  color: var(--sg-text-muted);
+}
+
+.sg-builder-count {
+  font-size: 0.75rem;
+  color: var(--sg-text-dim);
+  margin-left: auto;
+}
+
+.sg-btn--sm {
+  font-size: 0.6875rem;
+  padding: 6px 10px;
+}
+
+.sg-builder-layout {
+  display: grid;
+  grid-template-columns: minmax(200px, 220px) minmax(300px, 1fr) minmax(240px, 300px);
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .sg-builder-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sg-builder-panel,
+.sg-builder-canvas-wrap,
+.sg-builder-terminal {
+  background: var(--sg-card-bg);
+  border: 1px solid var(--sg-border-subtle);
+  border-radius: var(--sg-radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sg-builder-panel h3 {
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.sg-builder-panel-desc,
+.sg-builder-hint {
+  font-size: 0.75rem;
+  color: var(--sg-text-muted);
+  margin: 0;
+}
+
+.sg-builder-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sg-builder-tool {
+  border: 1px solid var(--sg-border-subtle);
+  border-radius: var(--sg-radius-sm);
+  background: var(--sg-code-bg);
+  padding: 10px 12px;
+  cursor: grab;
+  transition: border-color var(--sg-transition), box-shadow var(--sg-transition);
+}
+
+.sg-builder-tool:focus,
+.sg-builder-tool:hover {
+  border-color: var(--sg-border);
+  box-shadow: 0 0 0 1px var(--sg-border-subtle);
+}
+
+.sg-builder-tool h4 {
+  font-size: 0.75rem;
+  margin-bottom: 4px;
+  color: var(--sg-text);
+}
+
+.sg-builder-tool p {
+  font-size: 0.7rem;
+  color: var(--sg-text-muted);
+  margin-bottom: 6px;
+}
+
+.sg-builder-tool span {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sg-text-dim);
+}
+
+.sg-builder-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 80 / 24;
+  min-height: 360px;
+  background-color: rgba(0, 0, 0, 0.2);
+  background-image: repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 0,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 12px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.05) 0,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 24px
+    );
+  border: 1px dashed var(--sg-border-subtle);
+  border-radius: var(--sg-radius);
+  overflow: hidden;
+  touch-action: none;
+}
+
+.builder-node {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--sg-border-subtle);
+  border-radius: var(--sg-radius-sm);
+  color: var(--sg-text);
+  font-size: 0.7rem;
+  line-height: 1.4;
+  padding: 6px 8px;
+  padding-right: 24px;
+  cursor: grab;
+  transition: border-color var(--sg-transition), box-shadow var(--sg-transition), background var(--sg-transition);
+}
+
+.builder-node:focus-visible {
+  outline: 2px solid var(--sg-accent);
+  outline-offset: 2px;
+}
+
+.builder-node.is-active {
+  border-color: var(--sg-accent);
+  box-shadow: 0 0 0 2px var(--sg-accent-glow);
+  background: rgba(51, 255, 51, 0.08);
+}
+
+.builder-node-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--sg-text);
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.builder-node-remove:hover {
+  background: var(--sg-border);
+  color: var(--sg-bg);
+}
+
+.sg-builder-terminal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--sg-text-muted);
+}
+
+.builder-terminal-viewport {
+  border: 1px solid var(--sg-border-subtle);
+  border-radius: var(--sg-radius-sm);
+  background: var(--sg-bg);
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.builder-terminal-viewport .xterm {
+  height: 100%;
+  width: 100%;
+}
+
+.builder-terminal-fallback {
+  margin: 0;
+  padding: 12px;
+  font-family: var(--sg-font-mono);
+  font-size: 0.7rem;
+  color: var(--sg-text-muted);
+  white-space: pre-wrap;
+}
 
 /* ==========================================================================
    Komponenter — hamburger, dropdown, footer

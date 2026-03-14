@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loading glyph styleguide — sno fritt</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-theme="dark">
@@ -27,14 +28,15 @@
     </header>
 
     <div class="sg-callout">
-      <strong>På varje kort:</strong> <strong>Copy data</strong> = en rad (t.ex. till spinnerSets). <strong>Copy användning</strong> = färdig kod med setInterval du kan klistra in.
+      <strong>Ingen “loading glyph”-förvirring:</strong> Copy data ger råa ramar + intervall, <strong>Copy användning</strong> ger färdig snippet. Allt är katalogiserat i Spinners &amp; Throbbers, ASCII, Unicode, Hermes kawaii, Progress och Agentic Activity Feeds.
     </div>
 
     <nav class="sg-nav-inline" aria-label="Innehåll på sidan">
-      <a href="#glyph-cards">Glyph-kort</a>
+      <a href="#glyph-animations">Glyph Animations</a>
       <a href="#inline">Inline</a>
       <a href="#terminal-mockup">Terminal</a>
       <a href="#glyph-row-builder">Loading-rad</a>
+      <a href="#glyph-builder">Terminal canvas</a>
       <a href="#cursor-status">Cursor & status</a>
       <a href="#design">Design</a>
       <a href="#components">Komponenter</a>
@@ -42,29 +44,21 @@
     </nav>
 
     <main class="sg-main" id="sg-main">
-      <section class="sg-section" id="glyph-cards">
-        <h2 class="sg-section-title">Alla varianter — sno vad du vill</h2>
+      <section class="sg-section" id="glyph-animations">
+        <div class="sg-section-heading">
+          <span class="sg-label">Styleguide / Glyph Animations</span>
+          <h2 class="sg-section-title">Glyph Animations</h2>
+        </div>
+        <p class="sg-section-desc">Spinners &amp; Throbbers, ASCII classics, Unicode motion, Hermes kawaii ansikten, progress-indikatorer och agentiska activity feeds — allt samlat i en katalog.</p>
 
         <div class="sg-toolbar">
           <div class="sg-search-wrap">
             <label for="sg-search" class="sg-label">Sök</label>
-            <input type="search" id="sg-search" class="sg-input" placeholder="Filtrera på namn…" autocomplete="off" aria-label="Sök varianter på namn">
-          </div>
-          <div class="sg-filter-wrap">
-            <span class="sg-label">Kategori</span>
-            <div class="sg-filter-pills" role="group" aria-label="Filtrera på kategori">
-              <button type="button" class="sg-pill sg-pill--filter active" data-filter="all">Alla</button>
-              <button type="button" class="sg-pill sg-pill--filter" data-filter="dots">Dots</button>
-              <button type="button" class="sg-pill sg-pill--filter" data-filter="arrows">Pilar</button>
-              <button type="button" class="sg-pill sg-pill--filter" data-filter="blocks">Block</button>
-              <button type="button" class="sg-pill sg-pill--filter" data-filter="ascii">ASCII</button>
-              <button type="button" class="sg-pill sg-pill--filter" data-filter="shapes">Former</button>
-              <button type="button" class="sg-pill sg-pill--filter" data-filter="symbols">Symboler</button>
-            </div>
+            <input type="search" id="sg-search" class="sg-input" placeholder="Sök på namn eller tagg…" autocomplete="off" aria-label="Sök glyph animationer">
           </div>
           <div class="sg-sort-wrap">
             <label for="sg-sort" class="sg-label">Sortering</label>
-            <select id="sg-sort" class="sg-select" aria-label="Sortera varianter">
+            <select id="sg-sort" class="sg-select" aria-label="Sortera glyphs">
               <option value="az">A–Ö</option>
               <option value="za">Ö–A</option>
               <option value="category">Kategori</option>
@@ -73,167 +67,21 @@
           <p class="sg-result-count" id="sg-result-count" aria-live="polite"></p>
         </div>
 
-        <div class="sg-grid" id="sg-grid">
-          <article class="sg-card" data-variant="braille" data-category="dots">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="braille" data-resting="⌐"><span class="open-glyph">⌐</span> Open</a>
-            </div>
-            <div class="sg-card-name">braille</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="braille"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="braille"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="arrows" data-category="arrows">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="arrows" data-resting="⌐"><span class="open-glyph">⌐</span> Open</a>
-            </div>
-            <div class="sg-card-name">arrows</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="arrows"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="arrows"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="blocks" data-category="blocks">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="blocks" data-resting="⌐"><span class="open-glyph">⌐</span> Open</a>
-            </div>
-            <div class="sg-card-name">blocks</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="blocks"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="blocks"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="classic" data-category="ascii">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="classic" data-resting="⌐"><span class="open-glyph">⌐</span> Open</a>
-            </div>
-            <div class="sg-card-name">classic</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="classic"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="classic"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="dots" data-category="dots">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="dots" data-resting="⌐"><span class="open-glyph">⌐</span> Open</a>
-            </div>
-            <div class="sg-card-name">dots</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="dots"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="dots"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="moon" data-category="shapes">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="moon" data-resting="○"><span class="open-glyph">○</span> Open</a>
-            </div>
-            <div class="sg-card-name">moon</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="moon"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="moon"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="line" data-category="blocks">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="line" data-resting="▁"><span class="open-glyph">▁</span> Open</a>
-            </div>
-            <div class="sg-card-name">line</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="line"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="line"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="hex" data-category="ascii">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="hex" data-resting="0"><span class="open-glyph">0</span> Open</a>
-            </div>
-            <div class="sg-card-name">hex</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="hex"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="hex"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="quarter" data-category="shapes">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="quarter" data-resting="◠"><span class="open-glyph">◠</span> Open</a>
-            </div>
-            <div class="sg-card-name">quarter</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="quarter"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="quarter"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="triangle" data-category="shapes">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="triangle" data-resting="◢"><span class="open-glyph">◢</span> Open</a>
-            </div>
-            <div class="sg-card-name">triangle</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="triangle"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="triangle"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="square" data-category="shapes">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="square" data-resting="◱"><span class="open-glyph">◱</span> Open</a>
-            </div>
-            <div class="sg-card-name">square</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="square"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="square"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="binary" data-category="ascii">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="binary" data-resting="0"><span class="open-glyph">0</span> Open</a>
-            </div>
-            <div class="sg-card-name">binary</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="binary"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="binary"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="dice" data-category="symbols">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="dice" data-resting="⚀"><span class="open-glyph">⚀</span> Open</a>
-            </div>
-            <div class="sg-card-name">dice</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="dice"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="dice"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="circle" data-category="shapes">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="circle" data-resting="◴"><span class="open-glyph">◴</span> Open</a>
-            </div>
-            <div class="sg-card-name">circle</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="circle"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="circle"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
-          <article class="sg-card" data-variant="grow" data-category="blocks">
-            <div class="sg-card-demo">
-              <a class="open-btn" href="#" data-spinner="grow" data-resting="▏"><span class="open-glyph">▏</span> Open</a>
-            </div>
-            <div class="sg-card-name">grow</div>
-            <div class="sg-card-actions">
-              <button type="button" class="sg-copy-btn" data-copy-data="grow"><span class="copy-label">Copy data</span></button>
-              <button type="button" class="sg-copy-btn" data-copy-usage="grow"><span class="copy-label">Copy användning</span></button>
-            </div>
-          </article>
+        <div class="sg-filter-wrap">
+          <span class="sg-label">Kategori</span>
+          <div class="sg-filter-pills" id="glyph-filter-pills" role="group" aria-label="Filtrera på kategori"></div>
         </div>
+
+        <div class="sg-grid" id="sg-grid" aria-live="polite"></div>
       </section>
 
       <section class="sg-section" id="inline">
         <h2 class="sg-section-title">Inline — bara glyfen i text</h2>
         <p class="sg-section-desc">För "Laddar…", "Syncing" etc.</p>
         <div class="sg-inline-row">
-          <div class="sg-inline-item"><span class="inline-glyph" data-spinner="braille">⣻</span> Laddar...</div>
-          <div class="sg-inline-item"><span class="inline-glyph" data-spinner="moon">◐</span> WIP</div>
-          <div class="sg-inline-item"><span class="inline-glyph" data-spinner="dice">⚀</span> Rolling...</div>
+          <div class="sg-inline-item"><span class="inline-glyph" data-glyph="braille-orbital">⣻</span> Laddar...</div>
+          <div class="sg-inline-item"><span class="inline-glyph" data-glyph="lunar-sweep">◐</span> WIP</div>
+          <div class="sg-inline-item"><span class="inline-glyph" data-glyph="dice-roll">⚀</span> Rolling...</div>
         </div>
       </section>
 
@@ -250,7 +98,7 @@
               <span class="sg-terminal-prompt">user@host:~$</span> npm run build
             </div>
             <div class="sg-terminal-line sg-terminal-line--glyph">
-              <span class="inline-glyph" data-spinner="dots">⣻</span> Building…
+              <span class="inline-glyph" data-glyph="braille-orbital">⣻</span> Building…
             </div>
             <div class="sg-terminal-line">
               <span class="sg-terminal-prompt">user@host:~$</span><span class="terminal-cursor"></span>
@@ -264,17 +112,61 @@
         <p class="sg-section-desc">Lägg till flera glyphs på en rad med plus-knappen — bygg din egen loading-screen.</p>
         <div class="sg-glyph-row">
           <div class="sg-glyph-slot">
-            <span class="inline-glyph" data-spinner="braille">⣻</span>
+            <span class="inline-glyph" data-glyph="braille-orbital">⣻</span>
           </div>
           <div class="sg-glyph-slot">
-            <span class="inline-glyph" data-spinner="moon">◐</span>
+            <span class="inline-glyph" data-glyph="lunar-sweep">◐</span>
           </div>
           <div class="sg-glyph-slot">
-            <span class="inline-glyph" data-spinner="dots">⣾</span>
+            <span class="inline-glyph" data-glyph="unicode-orbit">⊶</span>
           </div>
           <button type="button" class="sg-glyph-add" aria-label="Lägg till glyph">
             <span class="sg-glyph-add-icon">+</span>
           </button>
+        </div>
+      </section>
+
+      <section class="sg-section" id="glyph-builder">
+        <div class="sg-section-heading">
+          <span class="sg-label">Terminal canvas</span>
+          <h2 class="sg-section-title">Drag-and-drop TUI canvas</h2>
+        </div>
+        <p class="sg-section-desc">Dra komponenter, snäpp mot 80×24-rutnätet och se resultatet live i en ANSI-terminal. Samma look &amp; feel som resten av styleguiden.</p>
+        <div class="sg-builder-toolbar">
+          <label class="sg-checkbox">
+            <input type="checkbox" id="builder-reduce-motion">
+            Reduce motion (pausa animationer)
+          </label>
+          <button type="button" class="sg-btn sg-btn--secondary sg-btn--sm" id="builder-clear">Rensa canvas</button>
+          <span class="sg-builder-count"><span id="builder-block-count">0</span> block aktiva</span>
+        </div>
+        <div class="sg-builder-layout">
+          <aside class="sg-builder-panel" aria-label="Komponentpalett">
+            <h3>Palette</h3>
+            <p class="sg-builder-panel-desc">Paneler, text, spinner, progress och agentiska feeds redo att dras ut.</p>
+            <div class="sg-builder-panel-list" id="builder-palette"></div>
+          </aside>
+          <div class="sg-builder-canvas-wrap">
+            <div class="sg-builder-canvas" id="builder-canvas" role="application" aria-label="GlyphUI canvas" tabindex="0"></div>
+            <p class="sg-builder-hint">Klicka för att markera block. Dubbelklicka eller tryck Delete för att ta bort. Allt snäpper mot rutnätet.</p>
+          </div>
+          <div class="sg-builder-terminal">
+            <div class="sg-builder-terminal-head">
+              <span>Live 80×24 preview</span>
+              <button type="button" class="sg-btn sg-btn--ghost sg-btn--sm" id="builder-reset-demo">Återställ demo</button>
+            </div>
+            <div class="sg-terminal sg-terminal--live">
+              <div class="sg-terminal-titlebar">
+                <span class="sg-terminal-dots"><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span><span class="sg-terminal-dot"></span></span>
+                <span class="sg-terminal-title">glyphui canvas</span>
+              </div>
+              <div class="sg-terminal-body">
+                <div class="builder-terminal-viewport" id="builder-terminal-container">
+                  <pre class="builder-terminal-fallback" id="builder-terminal-fallback" aria-live="polite"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -425,6 +317,7 @@
       </section>
     </main>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
