@@ -245,6 +245,7 @@ let builderFrame = 0;
 let builderTerminal = null;
 let builderTerminalFallback = null;
 const builderSettings = { reduceMotion: false };
+const builderRulers = { x: null, y: null };
 
 const THEME_KEY = 'sg-theme';
 
@@ -259,13 +260,19 @@ const ANSI_COLORS = {
 const ANSI_RESET = `${ESC}[0m`;
 
 const createId = () => (window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+let terminalRenderPending = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemeSwitcher();
-  initGlyphCatalog();
+  const hasGlyphCatalog = Boolean(document.getElementById('glyph-animations'));
+  if (hasGlyphCatalog) {
+    initGlyphCatalog();
+  }
+  initInlineGlyphs();
   initDropdowns();
   initModal();
   initBuilder();
+  updateFullSetExport();
 });
 
 function initGlyphCatalog() {
@@ -275,9 +282,7 @@ function initGlyphCatalog() {
   renderGlyphCards();
   initFilterAndSort();
   initCardPreviews();
-  initInlineGlyphs();
   initCopyButtons();
-  updateFullSetExport();
 }
 
 function renderFilterPills(container) {
@@ -309,6 +314,12 @@ function renderGlyphCards() {
     preview.className = 'sg-card-preview';
     preview.dataset.glyph = entry.id;
     preview.textContent = entry.frames[0];
+    const firstFrameLength = (entry.frames[0] || '').length;
+    if (firstFrameLength > 20) {
+      preview.style.fontSize = '1.3rem';
+    } else if (firstFrameLength > 10) {
+      preview.style.fontSize = '1.7rem';
+    }
 
     const name = document.createElement('div');
     name.className = 'sg-card-name';
@@ -643,8 +654,10 @@ function initBuilder() {
   const reduceMotionToggle = document.getElementById('builder-reduce-motion');
   builderTerminalFallback = document.getElementById('builder-terminal-fallback');
   if (!paletteWrap || !canvas) return;
-
+ 
   renderBuilderPalette(paletteWrap);
+  builderRulers.x = document.getElementById('builder-ruler-x');
+  builderRulers.y = document.getElementById('builder-ruler-y');
 
   canvas.addEventListener('dragover', (event) => {
     event.preventDefault();
@@ -666,7 +679,7 @@ function initBuilder() {
       builderSelectedId = null;
       renderBuilderCanvas();
       updateBuilderCount();
-      updateTerminalPreview();
+      scheduleTerminalRender();
     });
   }
 
@@ -679,13 +692,15 @@ function initBuilder() {
   if (reduceMotionToggle) {
     reduceMotionToggle.addEventListener('change', () => {
       builderSettings.reduceMotion = reduceMotionToggle.checked;
-      updateTerminalPreview();
+      renderBuilderCanvas();
+      scheduleTerminalRender();
     });
   }
 
   window.addEventListener('resize', () => {
     renderBuilderCanvas();
-    updateTerminalPreview();
+    renderBuilderRulers();
+    scheduleTerminalRender();
   });
 
   document.addEventListener('keydown', (event) => {
@@ -697,11 +712,12 @@ function initBuilder() {
 
   initTerminalPreview();
   resetBuilderDemo();
+  renderBuilderRulers();
   setInterval(() => {
-    if (!builderSettings.reduceMotion) {
-      builderFrame += 1;
-    }
-    updateTerminalPreview();
+    if (builderSettings.reduceMotion || !builderState.length) return;
+    builderFrame += 1;
+    renderBuilderCanvas();
+    scheduleTerminalRender();
   }, 420);
 }
 
@@ -831,7 +847,7 @@ function addBuilderComponent(paletteItem, x, y) {
   builderSelectedId = component.instanceId;
   renderBuilderCanvas();
   updateBuilderCount();
-  updateTerminalPreview();
+  scheduleTerminalRender();
 }
 
 function moveBuilderComponent(instanceId, x, y) {
@@ -841,7 +857,7 @@ function moveBuilderComponent(instanceId, x, y) {
   component.y = y;
   builderSelectedId = instanceId;
   renderBuilderCanvas();
-  updateTerminalPreview();
+  scheduleTerminalRender();
 }
 
 function removeBuilderComponent(instanceId) {
@@ -851,7 +867,7 @@ function removeBuilderComponent(instanceId) {
   if (builderSelectedId === instanceId) builderSelectedId = null;
   renderBuilderCanvas();
   updateBuilderCount();
-  updateTerminalPreview();
+  scheduleTerminalRender();
 }
 
 function renderBuilderCanvas() {
@@ -869,10 +885,19 @@ function renderBuilderCanvas() {
     node.style.height = `${component.height * metrics.cellHeight}px`;
     node.style.left = `${component.x * metrics.cellWidth}px`;
     node.style.top = `${component.y * metrics.cellHeight}px`;
-    node.textContent = component.label;
-    node.setAttribute('aria-label', component.label);
     node.draggable = true;
     node.dataset.instanceId = component.instanceId;
+
+    const title = document.createElement('div');
+    title.className = 'builder-node-title';
+    title.textContent = component.label;
+    node.appendChild(title);
+
+    const preview = document.createElement('pre');
+    preview.className = 'builder-node-preview';
+    preview.textContent = getNodePreviewContent(component);
+    node.appendChild(preview);
+
     node.addEventListener('dragstart', (event) => handleNodeDragStart(event, component));
     node.addEventListener('click', (event) => {
       event.stopPropagation();
@@ -894,6 +919,53 @@ function renderBuilderCanvas() {
     node.appendChild(removeBtn);
     canvas.appendChild(node);
   });
+  renderBuilderRulers();
+}
+
+function getNodePreviewContent(component) {
+  const glyph = component.glyphId ? glyphMap.get(component.glyphId) : null;
+  switch (component.kind) {
+    case 'panel': {
+      const lines = (component.defaultText || 'Panel Title').split('\n');
+      return lines.slice(0, Math.max(1, component.height - 2)).join('\n');
+    }
+    case 'text':
+      return component.defaultText || 'text';
+    case 'button': {
+      const label = (component.defaultText || 'Button').toUpperCase();
+      return `[ ${label} ]`;
+    }
+    case 'spinner':
+    case 'progress':
+    case 'agent-feed':
+    case 'multi-agent': {
+      if (!glyph || !glyph.frames.length) return component.label;
+      const index = builderSettings.reduceMotion ? 0 : builderFrame % glyph.frames.length;
+      return glyph.frames[index];
+    }
+    default:
+      return component.label;
+  }
+}
+
+function renderBuilderRulers() {
+  if (!builderRulers.x || !builderRulers.y) return;
+  const metrics = getCanvasMetrics();
+  const xTicks = [0, 20, 40, 60, 80];
+  const yTicks = [0, 6, 12, 18, 24];
+  builderRulers.x.innerHTML = '';
+  builderRulers.y.innerHTML = '';
+  if (!metrics) return;
+  xTicks.forEach((value) => {
+    const span = document.createElement('span');
+    span.textContent = value.toString();
+    builderRulers.x.appendChild(span);
+  });
+  yTicks.forEach((value) => {
+    const span = document.createElement('span');
+    span.textContent = value.toString();
+    builderRulers.y.appendChild(span);
+  });
 }
 
 function setBuilderSelection(instanceId) {
@@ -906,7 +978,7 @@ function updateBuilderCount() {
   if (!counter) return;
   counter.textContent = builderState.length.toString();
 }
-
+ 
 function initTerminalPreview() {
   const container = document.getElementById('builder-terminal-container');
   if (container && window.Terminal) {
@@ -923,7 +995,16 @@ function initTerminalPreview() {
   }
 }
 
-function updateTerminalPreview() {
+function scheduleTerminalRender() {
+  if (terminalRenderPending) return;
+  terminalRenderPending = true;
+  requestAnimationFrame(() => {
+    terminalRenderPending = false;
+    renderTerminalPreview();
+  });
+}
+
+function renderTerminalPreview() {
   const output = renderAnsiLayout(builderState, builderFrame);
   if (builderTerminal) {
     builderTerminal.reset();
@@ -952,7 +1033,7 @@ function resetBuilderDemo() {
   builderSelectedId = null;
   updateBuilderCount();
   renderBuilderCanvas();
-  updateTerminalPreview();
+  scheduleTerminalRender();
 }
 
 function clamp(value, min, max) {
